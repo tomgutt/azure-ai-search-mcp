@@ -12,7 +12,7 @@ import { hybridSearchTool } from "./tools/hybridSearch.js";
 import { textSearchTool } from "./tools/textSearch.js";
 import { fetchDocumentTool } from "./tools/fetchDocument.js";
 import { filteredSearchTool } from "./tools/filteredSearch.js";
-import { indexClient, INDEX_NAME } from "./azure-ai-search/azure-search-client.js";
+import { indexClient, getIndexName } from "./azure-ai-search/azure-search-client.js";
 
 async function main() {
   const server = new Server({
@@ -174,11 +174,12 @@ async function main() {
 
   // List available resources
   server.setRequestHandler(ListResourcesRequestSchema, async () => {
+    const indexName = getIndexName();
     return {
       resources: [
         {
-          uri: `azure-search://index/${INDEX_NAME}/schema`,
-          name: `Azure Search Index Schema: ${INDEX_NAME}`,
+          uri: `azure-search://index/${indexName}/schema`,
+          name: `Azure Search Index Schema: ${indexName}`,
           description: "Complete schema of the Azure Search index including field definitions, types, and attributes",
           mimeType: "application/json"
         }
@@ -189,10 +190,11 @@ async function main() {
   // Read resource content
   server.setRequestHandler(ReadResourceRequestSchema, async (req) => {
     const uri = req.params.uri;
+    const indexName = getIndexName();
 
-    if (uri === `azure-search://index/${INDEX_NAME}/schema`) {
+    if (uri === `azure-search://index/${indexName}/schema`) {
       try {
-        const index = await indexClient.getIndex(INDEX_NAME);
+        const index = await indexClient.getIndex(indexName);
         
         const schema = {
           name: index.name,

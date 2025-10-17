@@ -191,10 +191,70 @@ Returns JSON with:
 
 ### Running Tests
 
+The test suite supports running all tests or testing individual tools with custom queries.
+
+#### Run All Tests
+
 ```bash
-npm run build
-npm run test
+npm run build  # First time only
+npm run test   # Runs all 5 tools with default queries
 ```
+
+#### Test Individual Tools
+
+**Semantic Search** (AI-powered context understanding):
+```bash
+npm run test semantic "machine learning algorithms"
+```
+
+**Hybrid Search** (combines vector + text search):
+```bash
+npm run test hybrid "artificial intelligence trends"
+```
+
+**Text Search** (traditional keyword matching):
+```bash
+npm run test text "data science"
+```
+
+**Fetch Document** (retrieve by ID):
+```bash
+npm run test fetch doc-12345
+# or auto-find a document
+npm run test fetch
+```
+
+**Filtered Search** (with OData filters):
+```bash
+npm run test filtered "technology"
+```
+
+#### Get Help
+
+```bash
+npm run test help
+```
+
+#### Test Examples
+
+```bash
+# Test semantic search with a specific query
+npm run test semantic "neural networks and deep learning"
+
+# Test hybrid search for balanced results
+npm run test hybrid "cloud computing security best practices"
+
+# Test text search for exact keywords
+npm run test text "azure cognitive search"
+
+# Fetch a specific document
+npm run test fetch "doc-abc-123"
+
+# Test filtered search (adjust filter based on your schema)
+npm run test filtered "AI research papers"
+```
+
+**Note**: Make sure your `.env` file is configured with valid Azure credentials before running tests.
 
 ### Building
 

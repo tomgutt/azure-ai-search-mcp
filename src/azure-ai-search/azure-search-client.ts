@@ -1,32 +1,68 @@
 import { SearchClient, SearchIndexClient, AzureKeyCredential } from "@azure/search-documents";
 
-// Validate environment variables
-const endpoint = process.env.AZURE_SEARCH_ENDPOINT;
-const apiKey = process.env.AZURE_SEARCH_API_KEY;
-const indexName = process.env.AZURE_SEARCH_INDEX_NAME;
+// Get environment variables (will be validated on first use)
+function getEnvVars() {
+  const endpoint = process.env.AZURE_SEARCH_ENDPOINT;
+  const apiKey = process.env.AZURE_SEARCH_API_KEY;
+  const indexName = process.env.AZURE_SEARCH_INDEX_NAME;
 
-if (!endpoint || !apiKey || !indexName) {
-  throw new Error(
-    "Missing required environment variables: AZURE_SEARCH_ENDPOINT, AZURE_SEARCH_API_KEY, AZURE_SEARCH_INDEX_NAME"
-  );
+  if (!endpoint || !apiKey || !indexName) {
+    throw new Error(
+      "Missing required environment variables: AZURE_SEARCH_ENDPOINT, AZURE_SEARCH_API_KEY, AZURE_SEARCH_INDEX_NAME"
+    );
+  }
+
+  return { endpoint, apiKey, indexName };
 }
 
-// Create Azure Key Credential
-const credential = new AzureKeyCredential(apiKey);
+// Lazy initialization
+let _searchClient: SearchClient<any> | null = null;
+let _indexClient: SearchIndexClient | null = null;
+let _indexName: string | null = null;
 
-// Export Search Client for querying documents
-export const searchClient = new SearchClient(
-  endpoint,
-  indexName,
-  credential
-);
+// Export getter for Search Client (lazy init)
+export function getSearchClient(): SearchClient<any> {
+  if (!_searchClient) {
+    const { endpoint, apiKey, indexName } = getEnvVars();
+    const credential = new AzureKeyCredential(apiKey);
+    _searchClient = new SearchClient(endpoint, indexName, credential);
+  }
+  return _searchClient;
+}
 
-// Export Index Client for schema operations
-export const indexClient = new SearchIndexClient(
-  endpoint,
-  credential
-);
+// Export getter for Index Client (lazy init)
+export function getIndexClient(): SearchIndexClient {
+  if (!_indexClient) {
+    const { endpoint, apiKey } = getEnvVars();
+    const credential = new AzureKeyCredential(apiKey);
+    _indexClient = new SearchIndexClient(endpoint, credential);
+  }
+  return _indexClient;
+}
 
-// Export index name for convenience
-export const INDEX_NAME = indexName;
+// Export getter for index name (lazy init)
+export function getIndexName(): string {
+  if (!_indexName) {
+    _indexName = getEnvVars().indexName;
+  }
+  return _indexName;
+}
 
+// Legacy exports for backward compatibility (will initialize on access)
+export const searchClient = new Proxy({} as SearchClient<any>, {
+  get(_target, prop) {
+    return (getSearchClient() as any)[prop];
+  }
+});
+
+export const indexClient = new Proxy({} as SearchIndexClient, {
+  get(_target, prop) {
+    return (getIndexClient() as any)[prop];
+  }
+});
+
+export const INDEX_NAME = new Proxy({}, {
+  get(_target, prop) {
+    return (getIndexName() as any)[prop];
+  }
+}) as any as string;

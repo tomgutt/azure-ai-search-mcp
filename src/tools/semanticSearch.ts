@@ -1,4 +1,4 @@
-import { searchClient, indexClient, INDEX_NAME } from "../azure-ai-search/azure-search-client.js";
+import { searchClient, indexClient, getIndexName } from "../azure-ai-search/azure-search-client.js";
 
 export interface SemanticSearchParams {
   query: string;
@@ -23,7 +23,7 @@ export async function semanticSearchTool(params: SemanticSearchParams): Promise<
     // Get semantic configuration from index
     let semanticConfigName: string | undefined;
     try {
-      const index = await indexClient.getIndex(INDEX_NAME);
+      const index = await indexClient.getIndex(getIndexName());
       if (index.semanticSearch?.configurations && index.semanticSearch.configurations.length > 0) {
         semanticConfigName = index.semanticSearch.configurations[0].name;
       }
