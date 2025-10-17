@@ -1,0 +1,46 @@
+{
+  "name": "azure-ai-search-mcp",
+  "version": "1.0.0",
+  "description": "Integrate the Azure AI Search into agentic workflows via MCP",
+  "author": "Tom Guttermann",
+  "license": "MIT",
+  "publisher": "tomgutt",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/tomgutt/azure-ai-search-mcp.git"
+  },
+  "keywords": [
+    "mcp",
+    "agent",
+    "autonomous",
+    "ai",
+    "azure",
+    "ai search",
+    "search"
+  ],
+  "scripts": {
+    "build": "tsc && node -e \"require('fs').chmodSync('build/index.js', '755')\"",
+    "prepare": "npm run build",
+    "watch": "tsc --watch",
+    "inspector": "npx @modelcontextprotocol/inspector build/index.js",
+    "start": "node build/index.js",
+    "start:env": "dotenv -e .env -- node build/index.js",
+    "tool": "node build/test-client.js"
+  },
+  "type": "module",
+  "devDependencies": {
+    "@types/node": "^24.5.0",
+    "dotenv": "^17.2.2",
+    "typescript": "^5.9.2"
+  },
+  "dependencies": {
+    "@modelcontextprotocol/sdk": "^1.18.0",
+    "zod": "^3.25.76"
+  },
+  "bin": {
+    "notion": "./build/index.js"
+  },
+  "files": [
+    "build"
+  ]
+}
