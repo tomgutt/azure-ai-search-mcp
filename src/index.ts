@@ -31,7 +31,7 @@ async function main() {
       tools: [
         {
           name: "semantic_search",
-          description: "Perform a semantic search using Azure AI Search. This uses AI to understand the meaning and context of your query, returning the most semantically relevant results.",
+          description: "Perform a semantic search that uses AI to understand the meaning and context of your query, returning the most semantically relevant results.",
           inputSchema: {
             type: "object",
             properties: {
@@ -41,8 +41,8 @@ async function main() {
               },
               top: { 
                 type: "number",
-                description: "Maximum number of results to return (default: 10)",
-                default: 10
+                description: "Maximum number of results to return",
+                default: 30
               }
             },
             required: ["query"]
@@ -60,8 +60,8 @@ async function main() {
               },
               top: { 
                 type: "number",
-                description: "Maximum number of results to return (default: 10)",
-                default: 10
+                description: "Maximum number of results to return",
+                default: 30
               }
             },
             required: ["query"]
@@ -69,7 +69,7 @@ async function main() {
         },
         {
           name: "text_search",
-          description: "Perform a simple text-based search using keyword matching. This is best for exact phrase matches and simple queries.",
+          description: "Perform a simple text-based search using keyword matching. This is best for exact phrase matches.",
           inputSchema: {
             type: "object",
             properties: {
@@ -79,8 +79,8 @@ async function main() {
               },
               top: { 
                 type: "number",
-                description: "Maximum number of results to return (default: 10)",
-                default: 10
+                description: "Maximum number of results to return",
+                default: 30
               }
             },
             required: ["query"]
@@ -98,12 +98,12 @@ async function main() {
               },
               filter: {
                 type: "string",
-                description: "OData filter expression (e.g., \"category eq 'Technology'\" or \"price lt 100\")"
+                description: "OData filter expression (e.g., \"category eq 'Technology'\" or \"price lt 100\") see resources for the full list of available fields"
               },
               top: { 
                 type: "number",
-                description: "Maximum number of results to return (default: 10)",
-                default: 10
+                description: "Maximum number of results to return",
+                default: 30
               }
             },
             required: ["query", "filter"]
@@ -111,7 +111,7 @@ async function main() {
         },
         {
           name: "fetch_document",
-          description: "Retrieve a specific document by its ID. Returns the complete document without content_vector and content fields.",
+          description: "Retrieve a specific document by its ID. Returns the complete document.",
           inputSchema: {
             type: "object",
             properties: {

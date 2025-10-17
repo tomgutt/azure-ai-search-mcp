@@ -22,7 +22,7 @@ function cleanDocument(doc: any): any {
 }
 
 export async function filteredSearchTool(params: FilteredSearchParams): Promise<SearchResult> {
-  const { query, filter, top = 10 } = params;
+  const { query, filter, top = 30 } = params;
 
   try {
     // Perform search with OData filter

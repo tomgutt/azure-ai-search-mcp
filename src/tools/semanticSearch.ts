@@ -21,7 +21,7 @@ function cleanDocument(doc: any): any {
 }
 
 export async function semanticSearchTool(params: SemanticSearchParams): Promise<SearchResult> {
-  const { query, top = 10 } = params;
+  const { query, top = 30 } = params;
 
   try {
     // Try to get semantic configuration, but it's optional if vectorizer is configured

@@ -1,0 +1,27 @@
+# Source files (we only publish build/)
+src/
+tsconfig.json
+
+# Environment and config
+.env
+.env.*
+!.env.example
+
+# Development
+node_modules/
+*.log
+.DS_Store
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# Testing
+coverage/
+
+# Git
+.git/
+.gitignore
+

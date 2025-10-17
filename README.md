@@ -40,7 +40,7 @@ AZURE_SEARCH_API_KEY=your-api-key-here
 AZURE_SEARCH_INDEX_NAME=your-index-name
 
 # Optional: Comma-separated list of fields to exclude from search results
-# Default: content,content_vector,comments,custom_fields
+# Default: content,content_vector
 AZURE_SEARCH_EXCLUDE_FIELDS=content,content_vector,comments,custom_fields
 ```
 
@@ -113,7 +113,7 @@ Performs AI-powered semantic search that understands context and meaning. Works 
 
 **Parameters:**
 - `query` (string, required): The search query
-- `top` (number, optional): Maximum results to return (default: 10)
+- `top` (number, optional): Maximum results to return (default: 30)
 
 **Returns:** Document summaries without fields specified in `AZURE_SEARCH_EXCLUDE_FIELDS` (default: `content`, `content_vector`, additional fields specified in `AZURE_SEARCH_EXCLUDE_FIELDS`)
 
@@ -131,7 +131,7 @@ Combines full-text and vector search for balanced results.
 
 **Parameters:**
 - `query` (string, required): The search query
-- `top` (number, optional): Maximum results to return (default: 10)
+- `top` (number, optional): Maximum results to return (default: 30)
 
 **Returns:** Document summaries without fields specified in `AZURE_SEARCH_EXCLUDE_FIELDS` (default: `content`, `content_vector`, additional fields specified in `AZURE_SEARCH_EXCLUDE_FIELDS`)
 
@@ -139,7 +139,7 @@ Combines full-text and vector search for balanced results.
 ```json
 {
   "query": "artificial intelligence trends",
-  "top": 10
+  "top": 30
 }
 ```
 
@@ -149,7 +149,7 @@ Traditional keyword-based text search.
 
 **Parameters:**
 - `query` (string, required): The search query
-- `top` (number, optional): Maximum results to return (default: 10)
+- `top` (number, optional): Maximum results to return (default: 30)
 
 **Returns:** Document summaries without fields specified in `AZURE_SEARCH_EXCLUDE_FIELDS` (default: `content`, `content_vector`, additional fields specified in `AZURE_SEARCH_EXCLUDE_FIELDS`)
 
@@ -157,7 +157,7 @@ Traditional keyword-based text search.
 ```json
 {
   "query": "data science",
-  "top": 20
+  "top": 30
 }
 ```
 
@@ -168,7 +168,7 @@ Search with OData filter expressions to narrow results.
 **Parameters:**
 - `query` (string, required): The search query
 - `filter` (string, required): OData filter expression
-- `top` (number, optional): Maximum results to return (default: 10)
+- `top` (number, optional): Maximum results to return (default: 30)
 
 **Returns:** Document summaries without fields specified in `AZURE_SEARCH_EXCLUDE_FIELDS` (default: `content`, `content_vector`, additional fields specified in `AZURE_SEARCH_EXCLUDE_FIELDS`)
 
@@ -177,7 +177,7 @@ Search with OData filter expressions to narrow results.
 {
   "query": "technology",
   "filter": "category eq 'AI' and year ge 2020",
-  "top": 10
+  "top": 30
 }
 ```
 
@@ -188,7 +188,7 @@ Retrieve a specific document by its unique ID. Returns the complete document wit
 **Parameters:**
 - `documentId` (string, required): The document's unique identifier
 
-**Returns:** Full document including `comments` and `custom_fields` (excludes only `content` and `content_vector`)
+**Returns:** Full document including all fields (excludes only `content` and `content_vector`)
 
 **Example:**
 ```json

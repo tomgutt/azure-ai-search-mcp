@@ -21,7 +21,7 @@ function cleanDocument(doc: any): any {
 }
 
 export async function textSearchTool(params: TextSearchParams): Promise<SearchResult> {
-  const { query, top = 10 } = params;
+  const { query, top = 30 } = params;
 
   try {
     // Perform simple text search

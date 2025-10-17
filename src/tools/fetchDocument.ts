@@ -4,7 +4,7 @@ export interface FetchDocumentParams {
   documentId: string;
 }
 
-// Helper to remove only sensitive fields (keep comments and custom_fields for full document view)
+// Helper to remove only sensitive fields
 function cleanDocument(doc: any): any {
   const excludeFields = getExcludeFieldsForFetch();
   const cleanedDoc = { ...doc };

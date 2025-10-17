@@ -21,7 +21,7 @@ function cleanDocument(doc: any): any {
 }
 
 export async function hybridSearchTool(params: HybridSearchParams): Promise<SearchResult> {
-  const { query, top = 10 } = params;
+  const { query, top = 30 } = params;
 
   try {
     // Perform hybrid search (combines vector and full-text search)
