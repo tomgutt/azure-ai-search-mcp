@@ -1,4 +1,4 @@
-import { searchClient, indexClient, getIndexName } from "../azure-ai-search/azure-search-client.js";
+import { searchClient, indexClient, getIndexName, getExcludeFieldsForSearch } from "../azure-ai-search/azure-search-client.js";
 
 export interface SemanticSearchParams {
   query: string;
@@ -10,9 +10,13 @@ export interface SearchResult {
   count: number;
 }
 
-// Helper to remove sensitive fields
+// Helper to remove configured fields from search results
 function cleanDocument(doc: any): any {
-  const { content_vector, content, ...cleanedDoc } = doc;
+  const excludeFields = getExcludeFieldsForSearch();
+  const cleanedDoc = { ...doc };
+  for (const field of excludeFields) {
+    delete cleanedDoc[field];
+  }
   return cleanedDoc;
 }
 
@@ -20,7 +24,7 @@ export async function semanticSearchTool(params: SemanticSearchParams): Promise<
   const { query, top = 10 } = params;
 
   try {
-    // Get semantic configuration from index
+    // Try to get semantic configuration, but it's optional if vectorizer is configured
     let semanticConfigName: string | undefined;
     try {
       const index = await indexClient.getIndex(getIndexName());
@@ -28,18 +32,22 @@ export async function semanticSearchTool(params: SemanticSearchParams): Promise<
         semanticConfigName = index.semanticSearch.configurations[0].name;
       }
     } catch (error) {
-      console.warn("Could not retrieve semantic configuration, attempting search without it");
+      // Semantic configuration not required if vectorizer is configured
     }
 
     // Perform semantic search
     const searchOptions: any = {
       top,
-      queryType: "semantic",
       select: [],
     };
 
+    // Only set semantic config if available, otherwise rely on vectorizer
     if (semanticConfigName) {
+      searchOptions.queryType = "semantic";
       searchOptions.semanticConfiguration = semanticConfigName;
+    } else {
+      // Use simple search which works with vectorizer
+      searchOptions.queryType = "simple";
     }
 
     const searchResults = await searchClient.search(query, searchOptions);

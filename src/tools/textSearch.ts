@@ -1,4 +1,4 @@
-import { searchClient } from "../azure-ai-search/azure-search-client.js";
+import { searchClient, getExcludeFieldsForSearch } from "../azure-ai-search/azure-search-client.js";
 
 export interface TextSearchParams {
   query: string;
@@ -10,9 +10,13 @@ export interface SearchResult {
   count: number;
 }
 
-// Helper to remove sensitive fields
+// Helper to remove configured fields from search results
 function cleanDocument(doc: any): any {
-  const { content_vector, content, ...cleanedDoc } = doc;
+  const excludeFields = getExcludeFieldsForSearch();
+  const cleanedDoc = { ...doc };
+  for (const field of excludeFields) {
+    delete cleanedDoc[field];
+  }
   return cleanedDoc;
 }
 

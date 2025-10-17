@@ -38,7 +38,17 @@ Create a `.env` file in your project root or set these environment variables:
 AZURE_SEARCH_ENDPOINT=https://your-search-service.search.windows.net
 AZURE_SEARCH_API_KEY=your-api-key-here
 AZURE_SEARCH_INDEX_NAME=your-index-name
+
+# Optional: Comma-separated list of fields to exclude from search results
+# Default: content,content_vector,comments,custom_fields
+AZURE_SEARCH_EXCLUDE_FIELDS=content,content_vector,comments,custom_fields
 ```
+
+**Field Exclusion:**
+- `AZURE_SEARCH_EXCLUDE_FIELDS`: Controls which fields are excluded from search tool results (semantic, hybrid, text, filtered)
+- The `fetch_document` tool always only excludes `content` and `content_vector` fields
+- If not set, defaults to: `content,content_vector`
+- Customize to fit your needs (e.g., `content,content_vector` for minimal exclusion)
 
 ### Required Azure Resources
 
@@ -46,7 +56,9 @@ AZURE_SEARCH_INDEX_NAME=your-index-name
 2. **Search Index**: Configure an index with your data
 3. **API Key**: Get the admin or query key from the Azure Portal
 
-For semantic search to work, ensure your index has a semantic configuration enabled.
+**Optional for enhanced semantic search:**
+- **Semantic configuration**: Enables Azure's semantic ranker (recommended but not required)
+- **Vectorizer**: Enables vector-based semantic search (works without semantic configuration)
 
 ## Usage
 
@@ -74,7 +86,8 @@ Add to your Claude Desktop configuration file:
       "env": {
         "AZURE_SEARCH_ENDPOINT": "https://your-search-service.search.windows.net",
         "AZURE_SEARCH_API_KEY": "your-api-key-here",
-        "AZURE_SEARCH_INDEX_NAME": "your-index-name"
+        "AZURE_SEARCH_INDEX_NAME": "your-index-name",
+        "AZURE_SEARCH_EXCLUDE_FIELDS": "content,content_vector,comments,custom_fields"
       }
     }
   }
@@ -96,11 +109,13 @@ node build/index.js
 
 ### 1. `semantic_search`
 
-Performs AI-powered semantic search that understands context and meaning.
+Performs AI-powered semantic search that understands context and meaning. Works with or without semantic configuration - will use vectorizer if semantic configuration is not available.
 
 **Parameters:**
 - `query` (string, required): The search query
 - `top` (number, optional): Maximum results to return (default: 10)
+
+**Returns:** Document summaries without fields specified in `AZURE_SEARCH_EXCLUDE_FIELDS` (default: `content`, `content_vector`, additional fields specified in `AZURE_SEARCH_EXCLUDE_FIELDS`)
 
 **Example:**
 ```json
@@ -118,6 +133,8 @@ Combines full-text and vector search for balanced results.
 - `query` (string, required): The search query
 - `top` (number, optional): Maximum results to return (default: 10)
 
+**Returns:** Document summaries without fields specified in `AZURE_SEARCH_EXCLUDE_FIELDS` (default: `content`, `content_vector`, additional fields specified in `AZURE_SEARCH_EXCLUDE_FIELDS`)
+
 **Example:**
 ```json
 {
@@ -133,6 +150,8 @@ Traditional keyword-based text search.
 **Parameters:**
 - `query` (string, required): The search query
 - `top` (number, optional): Maximum results to return (default: 10)
+
+**Returns:** Document summaries without fields specified in `AZURE_SEARCH_EXCLUDE_FIELDS` (default: `content`, `content_vector`, additional fields specified in `AZURE_SEARCH_EXCLUDE_FIELDS`)
 
 **Example:**
 ```json
@@ -151,6 +170,8 @@ Search with OData filter expressions to narrow results.
 - `filter` (string, required): OData filter expression
 - `top` (number, optional): Maximum results to return (default: 10)
 
+**Returns:** Document summaries without fields specified in `AZURE_SEARCH_EXCLUDE_FIELDS` (default: `content`, `content_vector`, additional fields specified in `AZURE_SEARCH_EXCLUDE_FIELDS`)
+
 **Example:**
 ```json
 {
@@ -162,10 +183,12 @@ Search with OData filter expressions to narrow results.
 
 ### 5. `fetch_document`
 
-Retrieve a specific document by its unique ID.
+Retrieve a specific document by its unique ID. Returns the complete document with all fields.
 
 **Parameters:**
 - `documentId` (string, required): The document's unique identifier
+
+**Returns:** Full document including `comments` and `custom_fields` (excludes only `content` and `content_vector`)
 
 **Example:**
 ```json
@@ -311,11 +334,14 @@ azure-ai-search-mcp/
 
 ## How It Works
 
-1. **Client Initialization**: The server creates Azure Search clients using credentials from environment variables
+1. **Client Initialization**: The server creates Azure Search clients using credentials from environment variables (lazy initialization)
 2. **Tool Registration**: Each search tool is registered with the MCP server with appropriate schemas
 3. **Resource Exposure**: Index schema is exposed as an MCP resource for introspection
 4. **Query Execution**: Tools execute searches using the Azure Search SDK
-5. **Response Cleaning**: Sensitive fields (`content_vector`, `content`) are removed from responses
+5. **Response Filtering**:
+   - **Search tools** return document summaries without fields specified in `AZURE_SEARCH_EXCLUDE_FIELDS` env var
+   - **Fetch document** always returns full document (excludes only `content` and `content_vector`)
+   - Field exclusion is configurable per deployment via environment variables
 
 ## Security Notes
 
@@ -323,6 +349,8 @@ azure-ai-search-mcp/
 - **Environment Variables**: Use environment variables or secure secret management
 - **Access Control**: Use Azure RBAC and query keys (not admin keys) in production
 - **Rate Limiting**: Be aware of Azure Search service tier limits
+- **Field Exclusion**: Use `AZURE_SEARCH_EXCLUDE_FIELDS` to prevent sensitive data from being returned in search results
+- **Data Privacy**: The `content` and `content_vector` fields are always excluded from all responses by default
 
 ## Troubleshooting
 
@@ -333,9 +361,12 @@ Ensure all three environment variables are set:
 - `AZURE_SEARCH_API_KEY`
 - `AZURE_SEARCH_INDEX_NAME`
 
-### "Could not retrieve semantic configuration"
+### Semantic search configuration
 
-Your index may not have semantic search configured. The tool will still work but without semantic capabilities. Configure semantic search in the Azure Portal under your index settings.
+Semantic search works with or without explicit semantic configuration:
+- **With semantic configuration**: Uses Azure's semantic ranker for best results
+- **Without semantic configuration**: Falls back to simple search, works with vectorizer if configured
+- You don't need semantic configuration if you have a vectorizer configured in your index
 
 ### "Document with ID 'xxx' not found"
 

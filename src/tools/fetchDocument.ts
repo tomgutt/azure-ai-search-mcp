@@ -1,12 +1,16 @@
-import { searchClient } from "../azure-ai-search/azure-search-client.js";
+import { searchClient, getExcludeFieldsForFetch } from "../azure-ai-search/azure-search-client.js";
 
 export interface FetchDocumentParams {
   documentId: string;
 }
 
-// Helper to remove sensitive fields
+// Helper to remove only sensitive fields (keep comments and custom_fields for full document view)
 function cleanDocument(doc: any): any {
-  const { content_vector, content, ...cleanedDoc } = doc;
+  const excludeFields = getExcludeFieldsForFetch();
+  const cleanedDoc = { ...doc };
+  for (const field of excludeFields) {
+    delete cleanedDoc[field];
+  }
   return cleanedDoc;
 }
 

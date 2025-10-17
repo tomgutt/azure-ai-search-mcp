@@ -15,6 +15,21 @@ function getEnvVars() {
   return { endpoint, apiKey, indexName };
 }
 
+// Get fields to exclude from search results (configurable via env var)
+export function getExcludeFieldsForSearch(): string[] {
+  const excludeFields = process.env.AZURE_SEARCH_EXCLUDE_FIELDS;
+  if (!excludeFields) {
+    // Default exclusions if not specified
+    return ['content', 'content_vector'];
+  }
+  return excludeFields.split(',').map(f => f.trim());
+}
+
+// Get fields to exclude from fetch document (always excludes sensitive content fields)
+export function getExcludeFieldsForFetch(): string[] {
+  return ['content', 'content_vector'];
+}
+
 // Lazy initialization
 let _searchClient: SearchClient<any> | null = null;
 let _indexClient: SearchIndexClient | null = null;
