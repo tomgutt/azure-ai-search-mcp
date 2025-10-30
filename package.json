@@ -1,6 +1,6 @@
 {
   "name": "@tomgutt/azure-ai-search-mcp",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "Integrate Azure AI Search into agentic workflows via MCP - semantic, hybrid, and text search capabilities",
   "author": "Tom Guttermann",
   "license": "MIT",
