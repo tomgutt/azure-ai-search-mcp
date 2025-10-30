@@ -82,7 +82,7 @@ Add to your Claude Desktop configuration file:
   "mcpServers": {
     "azure-ai-search": {
       "command": "npx",
-      "args": ["azure-ai-search-mcp"],
+      "args": ["@tomgutt/azure-ai-search-mcp"],
       "env": {
         "AZURE_SEARCH_ENDPOINT": "https://your-search-service.search.windows.net",
         "AZURE_SEARCH_API_KEY": "your-api-key-here",

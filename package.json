@@ -1,5 +1,5 @@
 {
-  "name": "azure-ai-search-mcp",
+  "name": "@tomgutt/azure-ai-search-mcp",
   "version": "1.0.0",
   "description": "Integrate Azure AI Search into agentic workflows via MCP - semantic, hybrid, and text search capabilities",
   "author": "Tom Guttermann",
@@ -42,7 +42,7 @@
     "zod": "^3.25.76"
   },
   "bin": {
-    "azure-ai-search-mcp": "./build/index.js"
+    "notion": "./build/index.js"
   },
   "files": [
     "build"
